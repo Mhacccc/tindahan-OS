@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 import { useState } from "react"
 import axios from 'axios'
-
 import Form from '../components/Form'
 
 export default function Home() {
@@ -10,6 +9,8 @@ export default function Home() {
     const [loading,setLoading] = useState(true)
 
     const handleDelete = async (e) => {
+
+
 
         try{
             const response = await axios.delete(`http://localhost:4000/api/products/${e.target.value}`);
@@ -22,11 +23,24 @@ export default function Home() {
 
     }
 
-    const handleEdit = async (e) => {
-        try{
-            
-        }catch({respo}){
+    const handleEdit = async (id,fields) => {
 
+        const input = {
+            [fields]: prompt("Enter")
+        }
+
+        try{
+            const response = await axios.patch(`http://localhost:4000/api/products/${id}`,input)
+            console.log(response.data)
+            setProducts((prev)=>prev.map(product=>{
+                if(product._id===id){
+                    return {...product, ...input} 
+                }
+                return product
+            }))
+        
+        }catch({response}){
+            console.error(response.data)
         }
     }
 
@@ -40,7 +54,7 @@ export default function Home() {
         console.log(response.data)
         setProducts(response.data)
        }
-       ).catch((err)=>console.error(err)).finally(()=>{
+       ).catch((err)=>console.error(err.response.data)).finally(()=>{
         setLoading(false)
        })
 
@@ -48,7 +62,7 @@ export default function Home() {
 
     if(loading){
         return <h1>
-            Loading
+            Loading...
         </h1>
     }
 
@@ -59,14 +73,14 @@ export default function Home() {
             </h1>
 
             <ol>
-            {products.map((e)=>{
+            {products&&products.map((e)=>{
                 return (<li key={e._id}>
-                    <h1>{e.name}</h1> <button value={e._id} onClick={handleEdit}> edit </button>
-                    <p>{e.category}</p> <button value={e._id} onClick={handleEdit}> edit </button>
-                    <p>{e.price}</p> <button value={e._id} onClick={handleEdit}> edit </button>
-                    <p>{e.stock}</p> <button value={e._id} onClick={handleEdit}> edit </button>
+                    <h1>{e.name}</h1> <button onClick={()=>handleEdit(e._id,"name")}> edit </button>
+                    <p>{e.category}</p> <button onClick={()=>handleEdit(e._id,"category")}> edit </button>
+                    <p>{e.price}</p> <button onClick={()=>handleEdit(e._id,"price")}> edit </button>
+                    <p>{e.stock}</p> <button onClick={()=>handleEdit(e._id,"stock")}> edit </button>
                     <button value={e._id} onClick={handleDelete}> delete </button>
-                   
+                    
                     
                 </li>)
             })}

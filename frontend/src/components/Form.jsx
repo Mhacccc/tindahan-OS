@@ -23,6 +23,11 @@ export default function Form ({handleProduct}) {
             const response = await axios.post('http://localhost:4000/api/products/',product)
             console.log(response.data)
             handleProduct(response.data)
+            setName("")
+            setPrice("")
+            setStock("")
+            setCategory("")
+
         } catch (err) {
             console.error(err.response.data.error)
             setError(err.response.data.error)
