@@ -4,6 +4,7 @@ const productRoutes = require('./routes/productRoutes');
 const mongooseConnect = require('./config/db')
 
 const app = express();
+const PORT = process.env.PORT||4000
 
 
 app.use(express.json());
@@ -17,4 +18,8 @@ app.get('/',(req,res)=>{
 })
 
 
-mongooseConnect();
+mongooseConnect().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+});
